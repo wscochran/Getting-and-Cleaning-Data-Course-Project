@@ -78,3 +78,4 @@ dt_tidy_means_sd[[2]] <- factor(dt_tidy_means_sd[[2]], levels = dt_activities$Le
 
 dt_tidy_means_sd$Subject <- as.factor(dt_tidy_means_sd$Subject)
 
+write.table(dt_tidy_means_sd, "dt_tidy_means_sd.txt", row.names = F)

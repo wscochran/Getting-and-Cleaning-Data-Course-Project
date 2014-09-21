@@ -28,6 +28,7 @@ dt_train <- cbind(dt_subject_train, dt_y_train, dt_X_train)
 dt_subject_test <- as.data.table( read.table(file = "UCI HAR Dataset//test/subject_test.txt") )
 dt_y_test <- as.data.table( read.table(file = "UCI HAR Dataset/test/y_test.txt") )
 dt_X_test <- as.data.table( read.table(file = "UCI HAR Dataset/test/X_test.txt") )
+# TODO: use colClasses = classes to speed up read
 # TODO: optimize to read only the mean and sd?
 # TODO: redo these with fread?
 
@@ -56,10 +57,21 @@ dt_tidy[[2]] <- factor(dt_tidy[[2]], levels = dt_activities$Level, labels = dt_a
 # TODO: Get these using read.table, filter for mean, strings.as.factor
 dt_features <- as.data.table( read.table(file = "UCI HAR Dataset/features.txt", stringsAsFactors = F) )
 library(sqldf)
-dt_feature_means <- sqldf("select * from dt_features where V2 like '%mean%' or V2 like '%std%'")
-
+dt_feature_means_sd <- sqldf("select * from dt_features where V2 like '%mean%' or V2 like '%std%'")
+colnames(dt_tidy) <- c("Subject", "Activity", dt_features$V2)
 
 # 5. Create a second tidy data set with the average of each
 #    variable for each activity and each subject
+dt_tidy_means_sd <- data.table(matrix(NA, nrow=0, ncol=563))
+colnames(dt_tidy_means_sd) <- c("Subject", "Activity", dt_features$V2)
 
+for( subject in unique(dt_tidy$Subject) ){
+        for( activity in unique(subset(dt_tidy, Subject == subject)$Activity) ){
+                dt_sub <- subset(dt_tidy, Subject == subject & Activity == activity)
+                dt_tidy_means_sd <- rbind(dt_tidy_means_sd, as.data.table( as.list( c(Subject=subject, Activity=activity, colMeans(dt_sub[,3:563, with = F]) ) ) ) )
+        }
+}
+
+dt_tidy_means_sd$Subject <- as.factor(dt_tidy_means_sd$Subject)
+dt_tidy_means_sd$Activity <- as.factor(dt_tidy_means_sd$Activity)
 

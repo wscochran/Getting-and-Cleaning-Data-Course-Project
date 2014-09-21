@@ -50,7 +50,7 @@ tail(dt_tidy[,list(V1,V2,V3,V4)])
 # TODO: Prune down the variables
 
 # 3. Descriptively name the activities in the data set
-dt_tidy[[2]] <- factor(dt_tidy[[2]], levels = dt_activities$Level, labels = dt_activities$Activity)
+#dt_tidy[[2]] <- factor(dt_tidy[[2]], levels = dt_activities$Level, labels = dt_activities$Activity)
 
 
 # 4. Descriptively label the variables in the data set
@@ -74,6 +74,7 @@ for( subject in unique(dt_tidy$Subject) ){
         }
 }
 
+dt_tidy_means_sd[[2]] <- factor(dt_tidy_means_sd[[2]], levels = dt_activities$Level, labels = dt_activities$Activity)
+
 dt_tidy_means_sd$Subject <- as.factor(dt_tidy_means_sd$Subject)
-dt_tidy_means_sd$Activity <- as.factor(dt_tidy_means_sd$Activity)
 
